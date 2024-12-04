@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from './node_modules/uuid/dist/esm-browser/index.js';
 
-
 function getTasks() {
     var tasks_string = localStorage.getItem("tasks");
     if (tasks_string === null) {
@@ -12,6 +11,10 @@ function getTasks() {
             let li = document.createElement("li");
             let text = document.createTextNode(tasks[i].taskName);
             li.id = tasks[i].id
+
+            if(tasks[i].checked){
+                li.className = "checked"
+            }
 
             li.appendChild(text);
             li.appendChild(createCloseButton());
@@ -52,8 +55,15 @@ var list = document.getElementById("taskUl");
 
 list.addEventListener('click', function(ev) {
   if (ev.target.tagName === 'LI') {
-    ev.target.classList.toggle('checked');
-    console.log(ev.target.classList)
+    const wasCHecked = ev.target.classList.toggle('checked');
+    var tasks = JSON.parse(localStorage.getItem("tasks"))
+    tasks.forEach(task => {
+        if(task.id === ev.target.id){
+            task.checked = wasCHecked
+            console.log(wasCHecked)
+        }
+    })
+    localStorage.setItem("tasks",JSON.stringify(tasks))
   }
 }, false);
 
@@ -78,7 +88,7 @@ function addTask() {
 
     var tasks = JSON.parse(localStorage.getItem("tasks")) || []
 
-    var cur = {id : id,taskName : input}
+    var cur = {id : id,taskName : input, checked : false}
 
     tasks.push(cur);
 
@@ -92,6 +102,5 @@ function addTask() {
 
     attachCloseHandlers();
 }
-
 
 getTasks();
